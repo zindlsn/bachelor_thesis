@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageGallery.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -18,9 +19,19 @@ namespace ImageGallery.Pages
     /// </summary>
     public partial class ImageGalleryPage : Page
     {
+        ImageGalleryViewModel Model;
         public ImageGalleryPage()
         {
             InitializeComponent();
+
+            Model = new ImageGalleryViewModel();
+            this.DataContext = Model;
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            PictureViewModel viewModel = this.PictureList.SelectedItem as PictureViewModel;
+            this.Model.DisplayPicture = viewModel;
         }
     }
 }

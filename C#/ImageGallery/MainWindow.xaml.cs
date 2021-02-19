@@ -23,8 +23,6 @@ namespace ImageGallery
         public MainWindow()
         {
             InitializeComponent();
-
-
         }
     }
 }

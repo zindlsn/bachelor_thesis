@@ -10,7 +10,7 @@ namespace ImageGallery.MVVM
     /// <summary>
     /// The following class was copied from <see cref="https://stackoverflow.com/questions/20170923/relay-command-can-execute-and-a-task"/>.
     /// </summary>
-    public class RelayCommand : ICommand
+    public class RelayCommandd : ICommand
     {
         private Action<object> execute;
         private Func<object, bool> canExecute;
@@ -21,7 +21,7 @@ namespace ImageGallery.MVVM
             remove { CommandManager.RequerySuggested -= value; }
         }
 
-        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+        public RelayCommandd(Action<object> execute, Func<object, bool> canExecute = null)
         {
             this.execute = execute;
             this.canExecute = canExecute;
