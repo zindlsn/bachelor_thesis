@@ -95,15 +95,14 @@ namespace ImageGallery.ViewModels
 
             if (openFileDialog.ShowDialog() == true)
             {
-                this.IsLoading = true;
-
-                this.Pictures = new ObservableCollection<PictureViewModel>(await LoadPicturesAsync(openFileDialog));
-                this.IsLoading = false;
+                await LoadPicturesAsync2(openFileDialog);
             }
         }
 
-        private async Task<List<PictureViewModel>> LoadPicturesAsync(OpenFileDialog openFileDialog) =>
-            await Task.Run(() =>
+        private async Task<List<PictureViewModel>> LoadPicturesAsync(OpenFileDialog openFileDialog)
+        {
+
+            return await Task.Run(() =>
             {
                 List<PictureViewModel> pictures = new List<PictureViewModel>();
                 foreach (string filename in new List<string>(openFileDialog.FileNames))
@@ -114,9 +113,36 @@ namespace ImageGallery.ViewModels
                     newPicture.SetImageSize(filename);
                     newPicture.SetFileSize(filename);
                     newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
-                    Pictures.Add(newPicture);
+                    pictures.Add(newPicture);
                 }
                 return pictures;
             });
+        }
+
+        private async Task<List<PictureViewModel>> LoadPicturesAsync2(OpenFileDialog openFileDialog)
+        {
+            this.IsLoading = true;
+            return await Task.Run(() =>
+            {
+                List<PictureViewModel> pictures = new List<PictureViewModel>();
+                foreach (string filename in new List<string>(openFileDialog.FileNames))
+                {
+                    PictureViewModel newPicture = PictureViewModel.CreateNew();
+                    newPicture.Title = Path.GetFileName(filename);
+                    newPicture.Path = Path.GetFullPath(filename);
+                    newPicture.SetImageSize(filename);
+                    newPicture.SetFileSize(filename);
+                    newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
+                    Application.Current.Dispatcher.BeginInvoke(
+                    DispatcherPriority.Background,
+                    new Action(() =>
+                    {
+                        this.Pictures.Add(newPicture);
+                    }));
+                }
+                return pictures;
+            });
+            this.IsLoading = false;
+        }
     }
 }
