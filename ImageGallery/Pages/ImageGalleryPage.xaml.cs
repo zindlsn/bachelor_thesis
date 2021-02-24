@@ -30,8 +30,12 @@ namespace ImageGallery.Pages
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            PictureViewModel viewModel = this.PictureList.SelectedItem as PictureViewModel;
-            this.Model.DisplayPicture = viewModel;
+            if (Model.CanDisplayPicture())
+            {
+                PictureViewModel viewModel = this.PictureList.SelectedItem as PictureViewModel;
+                this.Model.DisplayPicture = viewModel;
+                this.PictureList.SelectedItem = null;
+            }
         }
     }
 }

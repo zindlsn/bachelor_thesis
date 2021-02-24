@@ -44,17 +44,16 @@
                 Grid.ColumnSpan="2"
                 Background="DarkGray"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                HorizontalAlignment="Center"
                 SelectionChanged="ListView_SelectionChanged"
                 ItemsSource="{Binding Pictures}">
                 <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid
+                    <DataTemplate>
+                        <Grid
                                 Background="DarkGray"
                                 Margin="4">
-                                <Image Source="{Binding Path}" Height="100"/>
-                            </Grid>
-                        </DataTemplate>
+                            <Image Source="{Binding Path}" Height="100"/>
+                        </Grid>
+                    </DataTemplate>
                 </ListBox.ItemTemplate>
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -67,20 +66,28 @@
             <StackPanel
             Grid.Row="3"
             Orientation="Horizontal">
-                <TextBlock Text="Aktueller Status:" Foreground="White"/>
+                <TextBlock Text="Current Status:" Foreground="White"/>
                 <TextBlock Text="{Binding Status}" Foreground="White"/>
             </StackPanel>
         </Grid>
         <Grid
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToCollapsedConverter}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0">
-                <Image Source="{Binding DisplayPicture.Path}"/>
-            </Button>
-            <StackPanel Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Image
+                Grid.Row="0"
+                Source="{Binding DisplayPicture.Path}">
+                <Image.InputBindings>
+                    <MouseBinding
+                        MouseAction="LeftClick"
+                        Command="{Binding ClosePictureCommand}"/>
+                </Image.InputBindings>
+            </Image>
+            <StackPanel
+                Grid.Row="1">
+                <TextBlock Text="Details:"/>
                 <TextBlock Text="{Binding DisplayPicture.Title}" />
             </StackPanel>
         </Grid>

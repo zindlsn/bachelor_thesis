@@ -81,7 +81,23 @@ namespace ImageGallery.ViewModels
         /// </summary>
         public ICommand OpenFileDialogCommand => _OpenFileDialogCommand ??= new AsyncCommand(async p => await OpenFileDialogAsync().ConfigureAwait(false), CanLoadPictures);
 
-        private Boolean CanLoadPictures() => true;
+        private ICommand _ClosePictureCommand;
+
+        public ICommand ClosePictureCommand => _ClosePictureCommand ??= new RelayCommandd(p=> ClosePicture(),p=> CanClosePicture());
+
+        public void ClosePicture()
+        {
+            this.DisplayPicture = null;
+        }
+
+        public bool CanClosePicture() => !this.IsLoading && this.DisplayPicture != null;
+        private Boolean CanLoadPictures() => !this.IsLoading;
+
+        /// <summary>
+        /// Shows if the picture can be shown.
+        /// </summary>
+        /// <returns></returns>
+        public bool CanDisplayPicture() => !_IsLoading && this.DisplayPicture == null;
 
         /// <summary>
         /// Opens the file dialog, to select the images 
@@ -140,9 +156,9 @@ namespace ImageGallery.ViewModels
                         this.Pictures.Add(newPicture);
                     }));
                 }
+                this.IsLoading = false;
                 return pictures;
             });
-            this.IsLoading = false;
         }
     }
 }
