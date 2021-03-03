@@ -111,6 +111,7 @@ namespace ImageGallery.ViewModels
 
             if (openFileDialog.ShowDialog() == true)
             {
+                this.Pictures.Clear();
                 await LoadPicturesAsync2(openFileDialog);
             }
         }

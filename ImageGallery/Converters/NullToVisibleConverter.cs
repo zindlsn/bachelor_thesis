@@ -23,7 +23,19 @@ namespace ImageGallery.Converters
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return value == null ? Visibility.Visible: Visibility.Collapsed;
+            bool visible = false;
+            if (value == null)
+            {
+                visible = true;
+            }
+            if (value is Int32)
+            {
+                if ((Int32)value == 0)
+                {
+                    visible = true;
+                }
+            }
+            return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>
