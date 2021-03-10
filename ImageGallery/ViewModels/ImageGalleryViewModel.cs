@@ -75,15 +75,11 @@ namespace ImageGallery.ViewModels
             get { return _Status; }
         }
 
-        private ICommand _OpenFileDialogCommand;
-        /// <summary>
-        /// Command for opening the file dialog for choosing pictures.
-        /// </summary>
-        public ICommand OpenFileDialogCommand => _OpenFileDialogCommand ??= new AsyncCommand(async p => await OpenFileDialogAsync().ConfigureAwait(false), CanLoadPictures);
+
 
         private ICommand _ClosePictureCommand;
 
-        public ICommand ClosePictureCommand => _ClosePictureCommand ??= new RelayCommandd(p=> ClosePicture(),p=> CanClosePicture());
+        public ICommand ClosePictureCommand => _ClosePictureCommand ??= new RelayCommandd(p => ClosePicture(), p => CanClosePicture());
 
         public void ClosePicture()
         {
@@ -99,6 +95,12 @@ namespace ImageGallery.ViewModels
         /// <returns></returns>
         public bool CanDisplayPicture() => !_IsLoading && this.DisplayPicture == null;
 
+        private ICommand _OpenFileDialogCommand;
+        /// <summary>
+        /// Command for opening the file dialog for choosing pictures.
+        /// </summary>
+        public ICommand OpenFileDialogCommand => _OpenFileDialogCommand ??= new AsyncCommand(async p => await OpenFileDialogAsync(), CanLoadPictures);
+
         /// <summary>
         /// Opens the file dialog, to select the images 
         /// which will be shown.
@@ -112,54 +114,35 @@ namespace ImageGallery.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 this.Pictures.Clear();
-                await LoadPicturesAsync2(openFileDialog);
+                this.IsLoading = true;
+                await foreach (var dataPoint in LoadPicturesAsync(openFileDialog))
+                {
+                    this.Pictures.Add(dataPoint);
+                }
+                this.IsLoading = false;
             }
         }
 
-        private async Task<List<PictureViewModel>> LoadPicturesAsync(OpenFileDialog openFileDialog)
+        private static async IAsyncEnumerable<PictureViewModel> LoadPicturesAsync(OpenFileDialog openFileDialog)
         {
-
-            return await Task.Run(() =>
+            foreach (string filename in openFileDialog.FileNames)
             {
-                List<PictureViewModel> pictures = new List<PictureViewModel>();
-                foreach (string filename in new List<string>(openFileDialog.FileNames))
-                {
-                    PictureViewModel newPicture = PictureViewModel.CreateNew();
-                    newPicture.Title = Path.GetFileName(filename);
-                    newPicture.Path = Path.GetFullPath(filename);
-                    newPicture.SetImageSize(filename);
-                    newPicture.SetFileSize(filename);
-                    newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
-                    pictures.Add(newPicture);
-                }
-                return pictures;
-            });
+                yield return await LoadPictureAsync(filename);
+            }
         }
 
-        private async Task<List<PictureViewModel>> LoadPicturesAsync2(OpenFileDialog openFileDialog)
+        private static async Task<PictureViewModel> LoadPictureAsync(string filename)
         {
-            this.IsLoading = true;
             return await Task.Run(() =>
-            {
-                List<PictureViewModel> pictures = new List<PictureViewModel>();
-                foreach (string filename in new List<string>(openFileDialog.FileNames))
-                {
-                    PictureViewModel newPicture = PictureViewModel.CreateNew();
-                    newPicture.Title = Path.GetFileName(filename);
-                    newPicture.Path = Path.GetFullPath(filename);
-                    newPicture.SetImageSize(filename);
-                    newPicture.SetFileSize(filename);
-                    newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
-                    Application.Current.Dispatcher.BeginInvoke(
-                    DispatcherPriority.Background,
-                    new Action(() =>
-                    {
-                        this.Pictures.Add(newPicture);
-                    }));
-                }
-                this.IsLoading = false;
-                return pictures;
-            });
+             {
+                 PictureViewModel newPicture = PictureViewModel.CreateNew();
+                 newPicture.Title = Path.GetFileName(filename);
+                 newPicture.Path = Path.GetFullPath(filename);
+                 newPicture.SetImageSize(filename);
+                 newPicture.SetFileSize(filename);
+                 newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
+                 return newPicture;
+             });
         }
     }
 }

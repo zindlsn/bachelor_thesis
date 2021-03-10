@@ -26,6 +26,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Button Command="{Binding OpenFileDialogCommand}" Content="Import" />
             <ListBox
                 x:Name="PictureList"
                 Grid.Row="2"

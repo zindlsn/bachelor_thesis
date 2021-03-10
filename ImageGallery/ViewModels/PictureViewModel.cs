@@ -100,8 +100,7 @@ namespace ImageGallery.ViewModels
         /// <returns></returns>
         internal static PictureViewModel CreateNew()
         {
-            Picture newPicture = new Picture();
-            PictureViewModel newViewModel = new PictureViewModel(newPicture);
+            PictureViewModel newViewModel = new PictureViewModel(new Picture());
             return newViewModel;
         }
 
