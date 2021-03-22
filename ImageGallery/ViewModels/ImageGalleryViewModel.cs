@@ -18,12 +18,13 @@ namespace ImageGallery.ViewModels
     /// </summary>
     public class ImageGalleryViewModel : ViewModelBase
     {
+
         /// <summary>
         /// Saves the loaded <see cref="PictureViewModel"/>s.
         /// </summary>
-        public ObservableCollection<PictureViewModel> Pictures { get; set; } = new ObservableCollection<PictureViewModel>();
+        public ObservableCollection<PictureViewModel> Pictures { get; } = new ObservableCollection<PictureViewModel>();
 
-        private bool _IsLoading = false;
+        private bool _IsLoading;
 
         /// <summary>
         /// Shows, if it is loading the pictures.
@@ -87,13 +88,13 @@ namespace ImageGallery.ViewModels
         }
 
         public bool CanClosePicture() => !this.IsLoading && this.DisplayPicture != null;
-        private Boolean CanLoadPictures() => !this.IsLoading;
+        private bool CanLoadPictures() => !this.IsLoading;
 
         /// <summary>
         /// Shows if the picture can be shown.
         /// </summary>
         /// <returns></returns>
-        public bool CanDisplayPicture() => !_IsLoading && this.DisplayPicture == null;
+        public bool CanDisplayPicture() => !IsLoading && this.DisplayPicture == null;
 
         private ICommand _OpenFileDialogCommand;
         /// <summary>
@@ -107,6 +108,7 @@ namespace ImageGallery.ViewModels
         /// </summary>
         private async Task OpenFileDialogAsync()
         {
+            this.IsLoading = true;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image files (*.png;*.jpeg)|*.png;*.jpeg;*.JPG|All files (*.*)|*.*";
             openFileDialog.Multiselect = true;
@@ -114,20 +116,22 @@ namespace ImageGallery.ViewModels
             if (openFileDialog.ShowDialog() == true)
             {
                 this.Pictures.Clear();
-                this.IsLoading = true;
-                await foreach (var dataPoint in LoadPicturesAsync(openFileDialog))
+                try
                 {
-                    this.Pictures.Add(dataPoint);
+                    foreach (string filename in openFileDialog.FileNames)
+                    {
+                        this.Pictures.Add(await LoadPictureAsync(filename));
+                    }
                 }
-                this.IsLoading = false;
-            }
-        }
+                catch (Exception)
+                {
 
-        private static async IAsyncEnumerable<PictureViewModel> LoadPicturesAsync(OpenFileDialog openFileDialog)
-        {
-            foreach (string filename in openFileDialog.FileNames)
-            {
-                yield return await LoadPictureAsync(filename);
+                }
+                finally
+                {
+
+                    this.IsLoading = false;
+                }
             }
         }
 
@@ -138,8 +142,7 @@ namespace ImageGallery.ViewModels
                  PictureViewModel newPicture = PictureViewModel.CreateNew();
                  newPicture.Title = Path.GetFileName(filename);
                  newPicture.Path = Path.GetFullPath(filename);
-                 newPicture.SetImageSize(filename);
-                 newPicture.SetFileSize(filename);
+                 newPicture.LoadImage(filename);
                  newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
                  return newPicture;
              });

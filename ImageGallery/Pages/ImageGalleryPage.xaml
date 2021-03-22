@@ -6,14 +6,20 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ImageGalleryPage">
-    <Grid>
+    <Grid
+        Background="DarkGray">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid
+            Grid.Row="0"
             HorizontalAlignment="Right"
-            VerticalAlignment="Center"
             Visibility="{Binding Pictures.Count, Converter={StaticResource NullToVisibleConverter}}">
-            <TextBlock Text="Nno pictures loaded yet" Foreground="White" Background="Red" />
+            <TextBlock Text="No pictures loaded yet" Foreground="White" Background="Red" />
         </Grid>
         <Grid
+            Margin="12,0,12,0"
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}"
             Background="DarkGray">
             <Grid.RowDefinitions>
@@ -26,7 +32,6 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding OpenFileDialogCommand}" Content="Import" />
             <ListBox
                 x:Name="PictureList"
                 Grid.Row="2"
@@ -38,10 +43,8 @@
                 ItemsSource="{Binding Pictures}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid
-                            Background="DarkGray"
-                            Margin="4">
-                            <Image Source="{Binding Path}" Height="100"/>
+                        <Grid>
+                            <Image Source="{Binding Image}"  Height="100"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -54,12 +57,6 @@
                     </ItemsPanelTemplate>
                 </ListBox.ItemsPanel>
             </ListBox>
-            <StackPanel
-            Grid.Row="3"
-            Orientation="Horizontal">
-                <TextBlock Text="Current Status:" Foreground="White"/>
-                <TextBlock Text="{Binding Status}" Foreground="White"/>
-            </StackPanel>
         </Grid>
         <Grid
             Background="DarkGray"
@@ -78,10 +75,25 @@
                 </Image.InputBindings>
             </Image>
             <StackPanel
+                Background="Black"
                 Grid.Row="1">
-                <TextBlock Text="Details:"/>
-                <TextBlock Text="{Binding DisplayPicture.Title, StringFormat=Filename: {0}}" />
+                <TextBlock Padding="4" Text="Details:" Foreground="White"/>
+                <TextBlock Padding="4" Text="{Binding DisplayPicture.Title, StringFormat=Filename: {0}}" Foreground="White" />
             </StackPanel>
+        </Grid>
+        <Grid
+            Grid.Row="1"
+            Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}">
+            <StackPanel
+                Orientation="Horizontal">
+            <TextBlock Text="Current Status:" Foreground="White"/>
+            <TextBlock Text="{Binding Status}" Foreground="White"/>
+            </StackPanel>
+            <Button
+                Margin="0,0,4,4"
+                HorizontalAlignment="Right"
+                Command="{Binding OpenFileDialogCommand}"
+                Content="Import" />
         </Grid>
     </Grid>
 </Page>

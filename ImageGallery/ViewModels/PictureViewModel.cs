@@ -61,8 +61,6 @@ namespace ImageGallery.ViewModels
             }
         }
 
-        public String Width { get; set; }
-        public String Height { get; set; }
         public long Size
         {
             get
@@ -78,21 +76,8 @@ namespace ImageGallery.ViewModels
             }
         }
 
-        /// <summary>
-        /// Set the values of <see cref="Width"/> <see cref="Height"/> of the picture.
-        /// </summary>
-        /// <param name="imageSize"></param>
-        internal void SetImageSize(String filename)
-        {
-            Size imageSize;
-            using (FileStream fileStream = new FileStream(System.IO.Path.GetFullPath(filename), FileMode.Open, FileAccess.Read))
-            {
-                BitmapFrame frame = BitmapFrame.Create(fileStream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-                imageSize = new Size(frame.PixelWidth, frame.PixelHeight);
-            }
-            this.Width = imageSize.Width.ToString();
-            this.Height = imageSize.Height.ToString();
-        }
+
+        public BitmapImage Image { get; set; }
 
         /// <summary>
         /// Creates a new ViewModel.
@@ -115,11 +100,26 @@ namespace ImageGallery.ViewModels
             this.Size = sizeInBytes;
         }
 
-        internal void Send()
-        {
-            Console.WriteLine(this.Model.Path);
-        }
-
         internal Picture GetModel() => this.Model;
+
+        /// <summary>
+        /// Loads the image.
+        /// </summary>
+        /// <param name="filename"></param>
+        internal void LoadImage(string filename)
+        {
+            using (FileStream fileStream = new FileStream(System.IO.Path.GetFullPath(filename), FileMode.Open, FileAccess.Read))
+            {
+                var loadedImage = new BitmapImage();
+                loadedImage.BeginInit();
+                loadedImage.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                loadedImage.CacheOption = BitmapCacheOption.OnLoad;
+                loadedImage.StreamSource = fileStream;
+                loadedImage.EndInit();
+                loadedImage.Freeze();
+
+                Image = loadedImage;
+            }
+        }
     }
 }

@@ -5,6 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:views="clr-namespace:ImageGallery.Pages"
-        Title="Imago" Height="600" Width="800">
-    <views:ImageGalleryPage />
+        Title="Imago" Height="600" Width="880">
+    <views:ImageGalleryPage Background="DarkGray" />
 </Window>
