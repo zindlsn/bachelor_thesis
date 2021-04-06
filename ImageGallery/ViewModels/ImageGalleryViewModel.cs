@@ -20,6 +20,20 @@ namespace ImageGallery.ViewModels
         /// </summary>
         public ObservableCollection<PictureViewModel> Pictures { get; } = new ObservableCollection<PictureViewModel>();
 
+        private LicensePageViewModel _ShowLicensePageViewModel = null;
+        public LicensePageViewModel ShowLicensePageViewModel
+        {
+            set
+            {
+                _ShowLicensePageViewModel = value;
+                OnPropertyChanged();
+            }
+            get
+            {
+                return _ShowLicensePageViewModel;
+            }
+        }
+
         private bool _IsLoading;
 
         /// <summary>
@@ -99,6 +113,24 @@ namespace ImageGallery.ViewModels
         }
 
         public bool CanClosePicture() => !this.IsLoading && this.DisplayPicture != null;
+
+        private ICommand _ShowLicensesCommand;
+
+        public ICommand ShowLicensesCommand => _ShowLicensesCommand ??= new RelayCommandd(p => ShowLicenses(), p => CanShowLicenses());
+
+        public void ShowLicenses()
+        {
+            if (this.ShowLicensePageViewModel == null)
+            {
+                this.ShowLicensePageViewModel = new LicensePageViewModel();
+            }
+            else
+            {
+                this.ShowLicensePageViewModel = null;
+            }
+        }
+
+        public bool CanShowLicenses() => true;
         private bool CanLoadPictures() => !this.IsLoading;
 
         /// <summary>

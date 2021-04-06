@@ -183,7 +183,7 @@ namespace ImageGallery.ViewModels
                         return bitmapImage;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw;
                 }

@@ -5,31 +5,37 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:local="clr-namespace:ImageGallery.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ImageGalleryPage" x:Name="page">
-    <Grid
-        Background="DarkGray">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
         <Grid
-            Margin="12,0,12,0"
-            Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}"
+            Grid.Row="0"
             Background="DarkGray">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <ListBox
+            <Grid
+            Margin="12,0,12,0"
+            Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}"
+            Background="DarkGray">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ListBox
                 x:Name="PictureList"
                 Grid.Row="2"
                 Grid.Column="0"
@@ -38,50 +44,58 @@
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectionChanged="ListView_SelectionChanged"
                 ItemsSource="{Binding Pictures}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Image Source="{Binding GalleryImage}"  Height="100"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Image Source="{Binding GalleryImage}"  Height="100"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel
                             Background="DarkGray"
                             IsItemsHost="True"
                             Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-            </ListBox>
-        </Grid>
-        <Grid
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </Grid>
+            <Grid
             Background="DarkGray"
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToCollapsedConverter}}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Image
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Image
                 Grid.Row="0"
                 Source="{Binding DisplayPicture.OriginalImage}">
-                <Image.InputBindings>
-                    <MouseBinding
+                    <Image.InputBindings>
+                        <MouseBinding
                         MouseAction="LeftClick"
                         Command="{Binding ClosePictureCommand}"/>
-                </Image.InputBindings>
-            </Image>
-            <StackPanel
+                    </Image.InputBindings>
+                </Image>
+                <StackPanel
                 Background="Black"
                 Grid.Row="1">
-                <TextBlock Padding="4" Text="Details:" Foreground="White"/>
-                <TextBlock Padding="4" Text="{Binding DisplayPicture.Title, StringFormat=Filename: {0}}" Foreground="White" />
-            </StackPanel>
+                    <TextBlock Padding="4" Text="Details:" Foreground="White"/>
+                    <TextBlock Padding="4" Text="{Binding DisplayPicture.Title, StringFormat=Filename: {0}}" Foreground="White" />
+                </StackPanel>
+            </Grid>
+            <Grid
+            Grid.Row="0" Grid.RowSpan="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+                <mah:ProgressRing  IsActive="{Binding IsLoading}" IsEnabled="True"/>
+            </Grid>
         </Grid>
         <Grid
             Grid.Row="1"
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}">
-            <Grid>
+            <Grid
+                Background="Gray">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -90,24 +104,37 @@
                 <StackPanel
                     Orientation="Horizontal"
                     Grid.Column="2">
-                    <mah:ToggleSwitch Content="Thumbnails" IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}" IsEnabled="{Binding Pictures.Count, Converter={StaticResource ZeroToFalseConverter}}" />
                     <Button
-                        Margin="0,0,12,12"
+                            Content="Licenses"
+                            Foreground="White"
+                            Style="{DynamicResource MahApps.Styles.Button.MetroWindow.Base}"
+                            Margin="0,0,12,0"
+                            Command="{Binding ShowLicensesCommand}">
+                    </Button>
+                    <mah:ToggleSwitch
+                        Content="Thumbnails"
+                        IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}"
+                        IsEnabled="{Binding Pictures.Count, Converter={StaticResource ZeroToFalseConverter}}" />
+                    <Button
+                        Margin="0,12,12,12"
                         Padding="20"
                         Background="AliceBlue"
                         HorizontalAlignment="Right"
                         Style="{DynamicResource MahApps.Styles.Button.Circle}"
                         Command="{Binding OpenFileDialogCommand}">
-                        <iconPacks:PackIconMaterial Kind="Upload" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <iconPacks:PackIconMaterial
+                            Kind="Upload"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
             </Grid>
         </Grid>
         <Grid
-            Grid.Row="0" Grid.RowSpan="2"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <mah:ProgressRing  IsActive="{Binding IsLoading}" IsEnabled="True"/>
+            Visibility="{Binding ShowLicensePageViewModel, Converter={StaticResource NullToCollapsedConverter}}">
+        <local:LicenceView
+            DataContext="{Binding ShowLicensePageViewModel}"
+            Grid.Row="0"/>
         </Grid>
     </Grid>
 </Page>
