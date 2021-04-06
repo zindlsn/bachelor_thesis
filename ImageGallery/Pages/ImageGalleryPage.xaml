@@ -112,9 +112,12 @@
                             Command="{Binding ShowLicensesCommand}">
                     </Button>
                     <mah:ToggleSwitch
-                        Content="Thumbnails"
                         IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}"
-                        IsEnabled="{Binding Pictures.Count, Converter={StaticResource ZeroToFalseConverter}}" />
+                        IsEnabled="{Binding Pictures.Count, Converter={StaticResource ZeroToFalseConverter}}">
+                        <mah:ToggleSwitch.Content>
+                            <TextBlock Text="Thumbnails" Foreground="White" />
+                        </mah:ToggleSwitch.Content>
+                    </mah:ToggleSwitch>
                     <Button
                         Margin="0,12,12,12"
                         Padding="20"
