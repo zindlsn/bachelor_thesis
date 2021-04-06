@@ -166,10 +166,10 @@ namespace ImageGallery.ViewModels
                         // landscape
                         if (ratio > 1)
                         {
-                            ratio = 1/ratio;
+                            ratio = (1 / ratio) + 1;
                         }
 
-                        width = (int)(desiredHeight * (ratio+1));
+                        width = (int)(desiredHeight * ratio);
 
                         var bitmapImage = new BitmapImage();
                         bitmapImage.BeginInit();

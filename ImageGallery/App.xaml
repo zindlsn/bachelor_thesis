@@ -13,6 +13,7 @@
             <converters:TrueToFalseConverter x:Key="TrueToFalseConverter" />
             <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
             <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
+            <converters:ZeroToFalseConverter x:Key="ZeroToFalseConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -90,14 +90,14 @@
                 <StackPanel
                     Orientation="Horizontal"
                     Grid.Column="2">
-                    <mah:ToggleSwitch Content="Thumbnails" IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}" />
+                    <mah:ToggleSwitch Content="Thumbnails" IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}" IsEnabled="{Binding Pictures.Count, Converter={StaticResource ZeroToFalseConverter}}" />
                     <Button
-                Margin="0,0,12,12"
-                Padding="20"
-                Background="AliceBlue"
-                HorizontalAlignment="Right"
-                Style="{DynamicResource MahApps.Styles.Button.Circle}"
-                Command="{Binding OpenFileDialogCommand}">
+                        Margin="0,0,12,12"
+                        Padding="20"
+                        Background="AliceBlue"
+                        HorizontalAlignment="Right"
+                        Style="{DynamicResource MahApps.Styles.Button.Circle}"
+                        Command="{Binding OpenFileDialogCommand}">
                         <iconPacks:PackIconMaterial Kind="Upload" VerticalAlignment="Center" HorizontalAlignment="Center" />
                     </Button>
                 </StackPanel>
