@@ -1,6 +1,7 @@
 ﻿using ImageGallery.MVVM;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,6 +53,7 @@ namespace ImageGallery.ViewModels
             set
             {
                 _IsThumbnailRequested = value;
+                OnPropertyChanged();
             }
             get { return _IsThumbnailRequested; }
         }
@@ -134,7 +136,15 @@ namespace ImageGallery.ViewModels
                     string[] files = Directory.GetFiles(dialog.SelectedPath);
                     foreach (string path in files)
                     {
-                        this.Pictures.Add(await LoadPictureAsync(path));
+                        try
+                        {
+                            this.Pictures.Add(await LoadPictureAsync(path));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Image could not be loaded. {ex.Message}");
+                            break;
+                        }
                     }
                 }
 
@@ -152,16 +162,31 @@ namespace ImageGallery.ViewModels
 
         private async Task<PictureViewModel> LoadPictureAsync(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be empty");
+            }
             PictureViewModel newPicture = PictureViewModel.CreateNew();
             newPicture.Path = path;
-            if (this.IsThumbnailRequested)
+            newPicture.IsThumbnailRequested = this.IsThumbnailRequested;
+
+            try
             {
-                await newPicture.LoadThumbnailAsync();
+                newPicture.Title = Path.GetFileName(path);
+                if (this.IsThumbnailRequested)
+                {
+                    await newPicture.LoadThumbnailAsync();
+                }
+                else
+                {
+                    await newPicture.LoadImageAsync();
+                }
             }
-            else
+            catch (ArgumentException)
             {
-                await newPicture.LoadImageAsync();
+                throw;
             }
+
             return newPicture;
         }
     }

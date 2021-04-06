@@ -2,6 +2,7 @@
 using ImageGallery.MVVM;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -80,6 +81,15 @@ namespace ImageGallery.ViewModels
 
         public BitmapImage OriginalImage { get; set; }
         public BitmapImage Thumbnail { get; set; }
+        public bool IsThumbnailRequested { get; set; }
+
+        public BitmapImage GalleryImage
+        {
+            get
+            {
+                return IsThumbnailRequested ? Thumbnail : OriginalImage;
+            }
+        }
 
         /// <summary>
         /// Creates a new ViewModel.
@@ -103,23 +113,6 @@ namespace ImageGallery.ViewModels
         }
 
         internal Picture GetModel() => this.Model;
-
-        /// <summary>
-        /// Loads the thumbnail.
-        /// </summary>
-        /// <param name="path"></param>
-        internal async Task LoadThumbnailAsync()
-        {
-            try
-            {
-                string filename = System.IO.Path.GetFileName(this.Path);
-                await CreateThumbnailAsync();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         /// <summary>
         /// Loads the image.
@@ -151,21 +144,48 @@ namespace ImageGallery.ViewModels
         /// <param name="lnWidth"></param>
         /// <param name="lnHeight"></param>
         /// <returns></returns>
-        async Task CreateThumbnailAsync()
+        internal async Task LoadThumbnailAsync()
         {
-            await Task.Run(() =>
+            this.Thumbnail = await Task.Run(() =>
             {
-                using (FileStream fileStream = new FileStream(this.Path, FileMode.Open, FileAccess.Read))
+                try
                 {
-                    var loadedImage = new BitmapImage();
-                    loadedImage.BeginInit();
-                    loadedImage.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                    loadedImage.CacheOption = BitmapCacheOption.OnLoad;
-                    loadedImage.StreamSource = fileStream;
-                    loadedImage.EndInit();
-                    loadedImage.Freeze();
+                    Image loadImage;
+                    int width;
+                    using (FileStream fileStream = new FileStream(this.Path, FileMode.Open, FileAccess.Read))
+                    {
+                        byte[] image = new byte[fileStream.Length];
+                        fileStream.Read(image, 0, image.Length);
+                        int desiredHeight = 100;
 
-                    Thumbnail = loadedImage;
+                        loadImage = Image.FromStream(new MemoryStream(image));
+
+                        // portrait
+                        double ratio = (double)loadImage.Width / (double)loadImage.Height;
+
+                        // landscape
+                        if (ratio > 1)
+                        {
+                            ratio = 1/ratio;
+                        }
+
+                        width = (int)(desiredHeight * (ratio+1));
+
+                        var bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.StreamSource = new MemoryStream(image);
+                        bitmapImage.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                        bitmapImage.DecodePixelHeight = desiredHeight;
+                        bitmapImage.DecodePixelWidth = width;
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+                        return bitmapImage;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
                 }
             });
         }

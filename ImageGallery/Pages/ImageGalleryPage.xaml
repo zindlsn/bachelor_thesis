@@ -7,7 +7,7 @@
       xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ImageGalleryPage">
+      Title="ImageGalleryPage" x:Name="page">
     <Grid
         Background="DarkGray">
         <Grid.RowDefinitions>
@@ -41,8 +41,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Image Source="{Binding OriginalImage}"  Height="100" Visibility="{Binding IsThumbailRequested, Converter={StaticResource NullToCollapsedConverter}}"/>
-                            <Image Source="{Binding Thumbnail}"  Height="100"  Visibility="{Binding IsThumbailRequested, Converter={StaticResource NullToVisibleConverter}}"/>
+                            <Image Source="{Binding GalleryImage}"  Height="100"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
