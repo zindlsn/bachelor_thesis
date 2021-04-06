@@ -21,12 +21,16 @@ namespace ImageGallery.Converters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool visible = true;
             if (value == null)
             {
                 visible = false;
+            }
+            if(value is bool)
+            {
+                visible =(bool)value;
             }
             if (value is Int32)
             {

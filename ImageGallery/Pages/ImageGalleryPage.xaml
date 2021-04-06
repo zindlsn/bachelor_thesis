@@ -3,6 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ImageGalleryPage">
@@ -12,12 +14,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid
-            Grid.Row="0"
-            HorizontalAlignment="Right"
-            Visibility="{Binding Pictures.Count, Converter={StaticResource NullToVisibleConverter}}">
-            <TextBlock Text="No pictures loaded yet" Foreground="White" Background="Red" />
-        </Grid>
+
         <Grid
             Margin="12,0,12,0"
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}"
@@ -44,7 +41,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Image Source="{Binding Image}"  Height="100"/>
+                            <Image Source="{Binding OriginalImage}"  Height="100" Visibility="{Binding IsThumbailRequested, Converter={StaticResource NullToCollapsedConverter}}"/>
+                            <Image Source="{Binding Thumbnail}"  Height="100"  Visibility="{Binding IsThumbailRequested, Converter={StaticResource NullToVisibleConverter}}"/>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -67,7 +65,7 @@
             </Grid.RowDefinitions>
             <Image
                 Grid.Row="0"
-                Source="{Binding DisplayPicture.Path}">
+                Source="{Binding DisplayPicture.OriginalImage}">
                 <Image.InputBindings>
                     <MouseBinding
                         MouseAction="LeftClick"
@@ -84,16 +82,33 @@
         <Grid
             Grid.Row="1"
             Visibility="{Binding DisplayPicture, Converter={StaticResource NullToVisibleConverter}}">
-            <StackPanel
-                Orientation="Horizontal">
-            <TextBlock Text="Current Status:" Foreground="White"/>
-            <TextBlock Text="{Binding Status}" Foreground="White"/>
-            </StackPanel>
-            <Button
-                Margin="0,0,4,4"
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel
+                    Orientation="Horizontal"
+                    Grid.Column="2">
+                    <mah:ToggleSwitch Content="Thumbnails" IsOn="{Binding IsThumbnailRequested,Mode=TwoWay}" />
+                    <Button
+                Margin="0,0,12,12"
+                Padding="20"
+                Background="AliceBlue"
                 HorizontalAlignment="Right"
-                Command="{Binding OpenFileDialogCommand}"
-                Content="Import" />
+                Style="{DynamicResource MahApps.Styles.Button.Circle}"
+                Command="{Binding OpenFileDialogCommand}">
+                        <iconPacks:PackIconMaterial Kind="Upload" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <Grid
+            Grid.Row="0" Grid.RowSpan="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <mah:ProgressRing  IsActive="{Binding IsLoading}" IsEnabled="True"/>
         </Grid>
     </Grid>
 </Page>

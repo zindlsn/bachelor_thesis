@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,11 +29,15 @@ namespace ImageGallery.Pages
             this.DataContext = Model;
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Model.CanDisplayPicture())
             {
                 PictureViewModel viewModel = this.PictureList.SelectedItem as PictureViewModel;
+                if(viewModel.OriginalImage == null)
+                {
+                    await viewModel.LoadImageAsync();
+                }
                 this.Model.DisplayPicture = viewModel;
                 this.PictureList.SelectedItem = null;
             }

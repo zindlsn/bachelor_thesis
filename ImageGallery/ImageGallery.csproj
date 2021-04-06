@@ -5,10 +5,12 @@
     <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformVersion>7.0</TargetPlatformVersion>
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
     
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro.IconPacks" Version="4.8.0" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.1.6" />
     <PackageReference Include="Microsoft.UI.Xaml" Version="2.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />

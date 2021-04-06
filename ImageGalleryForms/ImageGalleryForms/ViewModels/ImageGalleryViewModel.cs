@@ -1,9 +1,13 @@
-﻿using ImageGallery.MVVM;
+﻿using ImageGallery.Models;
+using ImageGallery.MVVM;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ImageGallery.ViewModels
@@ -40,20 +44,6 @@ namespace ImageGallery.ViewModels
                 OnPropertyChanged();
             }
             get { return _IsLoading; }
-        }
-
-        private bool _IsThumbnailRequested = false;
-
-        /// <summary>
-        /// Shows, if it is loading the pictures.
-        /// </summary>
-        public bool IsThumbnailRequested
-        {
-            set
-            {
-                _IsThumbnailRequested = value;
-            }
-            get { return _IsThumbnailRequested; }
         }
 
 
@@ -118,51 +108,43 @@ namespace ImageGallery.ViewModels
         private async Task OpenFileDialogAsync()
         {
             this.IsLoading = true;
-            this.Pictures.Clear();
-            try
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image files (*.png;*.jpeg)|*.png;*.jpeg;*.JPG|All files (*.*)|*.*";
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog() == true)
             {
-                var dialog = new FolderBrowserDialog()
+                this.Pictures.Clear();
+                try
                 {
-                    Description = "Time to select a folder",
-                    UseDescriptionForTitle = true,
-                    SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
-                        + Path.DirectorySeparatorChar,
-                    ShowNewFolderButton = true
-                };
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    string[] files = Directory.GetFiles(dialog.SelectedPath);
-                    foreach (string path in files)
+                    foreach (string filename in openFileDialog.FileNames)
                     {
-                        this.Pictures.Add(await LoadPictureAsync(path));
+                        this.Pictures.Add(await LoadPictureAsync(filename));
                     }
                 }
+                catch (Exception)
+                {
 
-            }
-            catch (Exception)
-            {
+                }
+                finally
+                {
 
-            }
-            finally
-            {
-
-                this.IsLoading = false;
+                    this.IsLoading = false;
+                }
             }
         }
 
-        private async Task<PictureViewModel> LoadPictureAsync(string path)
+        private static async Task<PictureViewModel> LoadPictureAsync(string filename)
         {
-            PictureViewModel newPicture = PictureViewModel.CreateNew();
-            newPicture.Path = path;
-            if (this.IsThumbnailRequested)
-            {
-                await newPicture.LoadThumbnailAsync();
-            }
-            else
-            {
-                await newPicture.LoadImageAsync();
-            }
-            return newPicture;
+            return await Task.Run(() =>
+             {
+                 PictureViewModel newPicture = PictureViewModel.CreateNew();
+                 newPicture.Title = Path.GetFileName(filename);
+                 newPicture.Path = Path.GetFullPath(filename);
+                 newPicture.LoadImage(filename);
+                 newPicture.CreationDate = File.GetCreationTimeUtc(Path.GetFullPath(filename));
+                 return newPicture;
+             });
         }
     }
 }

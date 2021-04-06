@@ -125,7 +125,6 @@ namespace ImageGalleryForms.UWP.ViewModels
 
             var folderPicker = new Windows.Storage.Pickers.FolderPicker();
             folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Desktop;
-            folderPicker.FileTypeFilter.Add("(*.png;*.jpeg");
             Windows.Storage.StorageFolder folder = await folderPicker.PickSingleFolderAsync();
             this.Pictures.Clear();
             try
