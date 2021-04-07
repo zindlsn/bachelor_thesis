@@ -34,6 +34,21 @@ namespace ImageGallery.ViewModels
             }
         }
 
+        private int _ImageCount = 10;
+
+        /// <summary>
+        /// Defines how many times the images gets imported.
+        /// </summary>
+        public int ImageCount
+        {
+            set
+            {
+                _ImageCount = value;
+                OnPropertyChanged();
+            }
+            get { return _ImageCount; }
+        }
+
         private bool _IsLoading;
 
         /// <summary>
@@ -166,11 +181,17 @@ namespace ImageGallery.ViewModels
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     string[] files = Directory.GetFiles(dialog.SelectedPath);
-                    foreach (string path in files)
+
+                    for (int j = 0; j < this.ImageCount; j++)
                     {
+                        string path = files[j];
                         try
                         {
                             this.Pictures.Add(await LoadPictureAsync(path));
+                            if (j == files.Length-1)
+                            {
+                                j = 0;
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -179,7 +200,6 @@ namespace ImageGallery.ViewModels
                         }
                     }
                 }
-
             }
             catch (Exception)
             {
@@ -187,7 +207,6 @@ namespace ImageGallery.ViewModels
             }
             finally
             {
-
                 this.IsLoading = false;
             }
         }

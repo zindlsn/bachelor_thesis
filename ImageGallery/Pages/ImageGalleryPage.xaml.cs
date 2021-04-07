@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,6 +42,12 @@ namespace ImageGallery.Pages
                 this.Model.DisplayPicture = viewModel;
                 this.PictureList.SelectedItem = null;
             }
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^1-9]+");
+            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }
